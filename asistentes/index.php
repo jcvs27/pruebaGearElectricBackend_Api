@@ -50,6 +50,18 @@ if ($method == "OPTIONS") {
     $telefono = $data->inputTelefono;
     $correo = $data->inputCorreo;
     $estado = '0';
+    // Se consulta que del asistente no este ya registrado
+    $queryCon = "SELECT COUNT(1) FROM asistentes WHERE numerodocumento= :id";
+    $queryCon = $cnn->prepare($queryCon);
+    $queryCon->bindParam(':id', $id, PDO::PARAM_STR);
+    $queryCon->execute();
+    $dato = $queryCon->fetch();
+    // Si existe no se deja registrar
+    if($dato[0] > 0){
+        Info("Ya existe un registro actual de ese asistente. ");
+        exit;
+    }
+
     $query = "INSERT INTO asistentes (numerodocumento, nombres, apellidos, tipodocumento, telefonomovil, correo, estado ) 
     VALUES(:num, :pn, :apel, :tip, :tel, :cor, :est )";
     $QueryIns = $cnn->prepare($query);
